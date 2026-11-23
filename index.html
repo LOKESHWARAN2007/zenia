@@ -224,7 +224,6 @@ footer{text-align:center;color:var(--muted);padding-block:48px 64px}
 /* ===== EDIT ME: everything personal lives in this block ===== */
 const CONFIG = {
   name: "Zenia",            // the name of the birthday person
-  name2: "Zenia ❤️",
   from: "Lokeshwaran",      // the name of the sender
   from2: "nan dhan",        // sign-off at the end of the letter
   user: "zenia",            // login name (not case sensitive)
@@ -312,7 +311,7 @@ $("#gate").addEventListener("submit", e => {
 });
 
 /* Content */
-$("#who").textContent = CONFIG.name2;
+$("#who").textContent = CONFIG.name;
 $("#intro").textContent = CONFIG.intro;
 $("#madeBy").textContent = "Made with love by " + CONFIG.from;
 
