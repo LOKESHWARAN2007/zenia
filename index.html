@@ -117,7 +117,9 @@ section{padding-block:56px}
 
 /* Video */
 .video{border-radius:22px;overflow:hidden;border:1px solid var(--line);background:#0c0618;aspect-ratio:16/9;display:grid;place-items:center;max-width:820px;margin:0 auto}
-.video video{width:100%;height:100%;object-fit:contain;background:#000}
+.video video,.video iframe{width:100%;height:100%;object-fit:contain;background:#000;border:0;display:block}
+.video .vfail{padding:24px;text-align:center;color:var(--muted);font-size:.95rem}
+.video .vfail b{color:var(--marigold)}
 .video .soon{text-align:center;color:var(--muted);padding:20px}
 .video .play{width:76px;height:76px;border-radius:50%;background:var(--rose);display:grid;place-items:center;margin:0 auto 14px}
 
@@ -248,7 +250,7 @@ const CONFIG = {
     { src: "", caption: "Late night talks" },
     { src: "", caption: "Us, always" }
   ],
-  video: { src: "wish.mp4", poster: "" },   // src: a video URL or data URI
+  video: { src: "wish.mp4", poster: "" },   // src: YouTube link, Google Drive share link, or direct .mp4 path/URL
   letter: [
     "Dear Zenia,",
     "Another year, and I am still glad I get to know you. Thank you for being the kind of friend who makes everything lighter.",
@@ -390,9 +392,29 @@ addEventListener("keydown", e => {
 
 /* Video */
 const vb = $("#videoBox");
-if(CONFIG.video.src){
+function embedUrl(u){
+  u = (u || "").trim();
+  let m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/);
+  if(m) return "https://www.youtube.com/embed/" + m[1] + "?rel=0&playsinline=1";
+  m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:.*&)?id=)([\w-]+)/);
+  if(m) return "https://drive.google.com/file/d/" + m[1] + "/preview";
+  return "";
+}
+const emb = embedUrl(CONFIG.video.src);
+if(emb){
+  const f = make("iframe"); f.src = emb; f.title = "Birthday video"; f.loading = "lazy";
+  f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen = true; f.referrerPolicy = "strict-origin-when-cross-origin";
+  vb.appendChild(f);
+} else if(CONFIG.video.src){
   const v = make("video"); v.controls = true; v.playsInline = true; v.preload = "metadata"; v.src = CONFIG.video.src;
-  if(CONFIG.video.poster) v.poster = CONFIG.video.poster; vb.appendChild(v);
+  if(CONFIG.video.poster) v.poster = CONFIG.video.poster;
+  v.addEventListener("error", () => {
+    const code = v.error ? v.error.code : 0;
+    const why = code === 4 ? "The file was not found, or the format is not supported (it must be H.264 .mp4)." : code === 3 ? "The video could not be decoded. Re-save it as H.264 .mp4." : code === 2 ? "A network error stopped the video from loading." : "The video could not load.";
+    const d = make("div", "vfail"); d.innerHTML = "<p><b>Video problem.</b> " + why + "</p><p>File tried: " + CONFIG.video.src.replace(/[<>&"]/g, "") + "</p>";
+    vb.replaceChildren(d);
+  });
+  vb.appendChild(v);
 } else {
   vb.innerHTML = '<div class="soon"><div class="play"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#fff"/></svg></div><p>Your video plays here once it is added.</p></div>';
 }
