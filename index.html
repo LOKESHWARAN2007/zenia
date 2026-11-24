@@ -250,7 +250,7 @@ const CONFIG = {
     { src: "", caption: "Late night talks" },
     { src: "", caption: "Us, always" }
   ],
-  video: { src: "video/wish.mp4", poster: "" },   // src: YouTube link, Google Drive share link, or direct .mp4 path/URL
+  video: { src: "https://youtube.com/shorts/okvqM6NzGT0?si=pMG-qt4jynNxaldQ", poster: "" },   // src: YouTube link, Google Drive share link, or direct .mp4 path/URL
   letter: [
     "Dear Zenia,",
     "Another year, and I am still glad I get to know you. Thank you for being the kind of friend who makes everything lighter.",
@@ -329,7 +329,7 @@ const candles = $("#candles");
 });
 $("#blow").addEventListener("click", () => {
   const svg = $("#cakeSvg"), out = svg.classList.toggle("out");
-  $("#wish").textContent = out ? "Wish made. It is going to come true." : "";
+  $("#wish").textContent = out ? "I wish you all the best and hope your dreams come true." : "";
   $("#blow").textContent = out ? "Light them again" : "Blow out the candles";
   if(out){ const r = svg.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 60, 140); }
 });
